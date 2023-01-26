@@ -3,6 +3,7 @@
 
 /* Libs */
 #include <sol.hpp>
+#include <FNV1A.hpp>
 
 /* Math */
 #include "../Math/Math.hpp"

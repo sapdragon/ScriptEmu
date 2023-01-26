@@ -71,5 +71,8 @@
     <ClInclude Include="Emulator\Engine\Tables\TablesSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\FNV1A\FNV1A.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

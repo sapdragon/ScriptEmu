@@ -7,11 +7,10 @@ int main()
 
     printf("ScriptEmu alpha\n");
 
-    g_EmulatorEngine.EmulateScript(R"(local function on_paint()
-    renderer.rect_filled_fade(vec2_t.new(5, 5), vec2_t.new(20, 20), color_t.new(255, 0, 0, 255), color_t.new(255, 0, 0, 255), color_t.new(0, 0, 0, 255), color_t.new(0, 0, 0, 255))
-end
+    g_EmulatorEngine.EmulateScript(R"(local local_info = engine.get_player_info(engine.get_local_player())
+local shit = local_info.steam_id64
 
-client.register_callback("paint", on_paint))");
+local_info.name = shit)");
 
 	auto aTraceData = g_EmulatorEngine.GetTraceData();
 

@@ -167,3 +167,160 @@ namespace Render
 	}
 
 }
+
+namespace Ragebot
+{
+	inline void IgnorePlayer(int iEntityIndex)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::IgnorePlayer ( " + std::to_string(iEntityIndex) + " )");
+	}
+	
+	inline void OverrideWallPenetration(int iEntityIndex, bool bPenetrate)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideWallPenetration ( " + std::to_string(iEntityIndex) + ", " + std::to_string(bPenetrate) + " )");
+	}
+
+	inline void OverrideDesyncCorrection(int iEntityIndex, bool bCorrect)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideDesyncCorrection ( " + std::to_string(iEntityIndex) + ", " + std::to_string(bCorrect) + " )");
+	}
+
+	inline void OverrideHitScan(int iEntityIndex, int iHitbox, bool bScan)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideHitScan ( " + std::to_string(iEntityIndex) + ", " + std::to_string(iHitbox) + ", " + std::to_string(bScan) + " )");
+	}
+	
+	inline void OverrideSkipUnsafePoints(int iEntityIndex, int iHitbox, bool bSkip)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideSkipUnsafePoints ( " + std::to_string(iEntityIndex) + ", " + std::to_string(iHitbox) + ", " + std::to_string(bSkip) + " )");
+	}
+
+	inline void OverrideMinDamage(int iEntityIndex, float flDamage)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideMinDamage ( " + std::to_string(iEntityIndex) + ", " + std::to_string(flDamage) + " )");
+	}
+	
+	inline void OverrideSafePoint(int iEntityIndex, int iMode)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideSafePoint ( " + std::to_string(iEntityIndex) + ", " + std::to_string(iMode) + " )");
+	}
+
+	inline void OverrideMaxMisses(int iEntityIndex, int iMisses)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideMaxMisses ( " + std::to_string(iEntityIndex) + ", " + std::to_string(iMisses) + " )");
+	}
+
+	inline void OverrideHeadScale(int iEntityIndex, float flScale)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideHeadScale ( " + std::to_string(iEntityIndex) + ", " + std::to_string(flScale) + " )");
+	}
+
+	inline void OverrideBodyScale(int iEntityIndex, float flScale)
+	{
+		g_EmulatorEngine.WriteTrace("Ragebot::OverrideBodyScale ( " + std::to_string(iEntityIndex) + ", " + std::to_string(flScale) + " )");
+	}
+
+}
+
+namespace SourceUtils
+{
+	inline Vector2 WorldToScreen(Vector vecWorld)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::WorldToScreen ( Vector3(" + std::to_string(vecWorld.m_flX) + " , " + std::to_string(vecWorld.m_flY) + " , " + std::to_string(vecWorld.m_flZ) + ") )");
+		return Vector2(200, 250);
+	}
+
+	inline void SetClanTag(std::string sTag)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::SetClanTag ( " + sTag + " )");
+	}
+
+	inline void SetName(std::string sName)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::SetName ( " + sName + " )");
+	}
+
+	inline Convar_t GetConVar(std::string sName)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::GetConVar ( " + sName + " )");
+		return Convar_t{ sName };
+	}
+
+	inline int GetNetVar(std::string sTable, std::string sProp)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::GetNetVar ( " + sTable + ", " + sProp + " )");
+		return 0x1337;
+	}
+
+	inline int GetLatency()
+	{
+		return 69;
+	}
+
+	inline int CreateInterface(std::string sModule, std::string sInterface)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::CreateInterface ( " + sModule + ", " + sInterface + " )");
+		return 0x1337;
+	}
+}
+
+namespace Engine
+{
+	inline Vector2 GetScreenSize()
+	{
+		g_EmulatorEngine.WriteTrace("Engine::GetScreenSize()");
+		return Vector2(1920, 1080);
+	}
+
+	inline bool IsConnected()
+	{
+		g_EmulatorEngine.WriteTrace("Engine::IsConnected()");
+		return true;
+	}
+
+	inline bool IsInGame()
+	{
+		g_EmulatorEngine.WriteTrace("Engine::IsInGame()");
+		return true;
+	}
+
+	inline int GetLocalPlayer()
+	{
+		g_EmulatorEngine.WriteTrace("Engine::GetLocalPlayer()");
+		return 1;
+	}
+
+	inline PlayerInfo_t GetPlayerInfo(int iPlayerIndex)
+	{
+		g_EmulatorEngine.WriteTrace("Engine::GetPlayerInfo ( " + std::to_string(iPlayerIndex) + " )");
+		return PlayerInfo_t{ };
+	}
+
+	inline std::string GetLevelNameShort(int iPlayerIndex)
+	{
+		g_EmulatorEngine.WriteTrace("Engine::GetLevelNameShort ( " + std::to_string(iPlayerIndex) + " )");
+		return "de_dust2";
+	}
+
+	inline int GetPlayerForUserID(int iUserID)
+	{
+		g_EmulatorEngine.WriteTrace("Engine::GetPlayerForUserID ( " + std::to_string(iUserID) + " )");
+		return 1;
+	}
+	
+	inline void SetViewAngles(Angle angViewAngles)
+	{
+		g_EmulatorEngine.WriteTrace("Engine::SetViewAngles ( Angle(" + std::to_string(angViewAngles.m_flPitch) + " , " + std::to_string(angViewAngles.m_flYaw) + " , " + std::to_string(angViewAngles.m_flRoll) + ") )");
+	}
+	
+	inline Angle GetViewAngles()
+	{
+		g_EmulatorEngine.WriteTrace("Engine::GetViewAngles()");
+		return Angle{ 90, 180, 90 };
+	}
+	
+	inline void ExecuteClientCmd(std::string sCommand)
+	{
+		g_EmulatorEngine.WriteTrace("Engine::ExecuteClientCmd ( " + sCommand + " )");
+	}
+}

@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(ProjectDir)Libraries\LuaJIT\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)Includes\LuaJIT\;$(ProjectDir)Includes\sol\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Includes\LuaJIT\;$(ProjectDir)Includes\sol\;$(ProjectDir)Includes\FNV1A\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -155,6 +155,7 @@
     <ClInclude Include="Emulator\Math\Vectors\Vector2.hpp" />
     <ClInclude Include="Emulator\Math\Vectors\Vector3.hpp" />
     <ClInclude Include="Emulator\Math\Vectors\Vector4.hpp" />
+    <ClInclude Include="Includes\FNV1A\FNV1A.hpp" />
     <ClInclude Include="Includes\sol\config.hpp" />
     <ClInclude Include="Includes\sol\forward.hpp" />
     <ClInclude Include="Includes\sol\sol.hpp" />

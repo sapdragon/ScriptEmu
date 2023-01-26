@@ -103,7 +103,6 @@ void CEmulatorEngine::InitializeTypes()
 	/* Initialize source engine types */
 	g_TypesSystem.InitializeGame();
 	
-
 }
 
 void CEmulatorEngine::InitializeTables()
@@ -113,4 +112,13 @@ void CEmulatorEngine::InitializeTables()
 
 	/* Initialize tables for render */
 	g_TablesSystem.InitializeRender();
+
+	/* Initialize ragebot table */
+	g_TablesSystem.InitializeRageBot();
+
+	/* Initialize tables for source utils */
+	g_TablesSystem.InitializeSourceUtils();
+	
+	/* Initialize engine table */
+	g_TablesSystem.InitializeEngine();
 }

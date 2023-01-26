@@ -1,4 +1,5 @@
 #pragma once
+#include <any>
 struct GameEvent_t
 {
 	std::string GetName()
@@ -55,38 +56,40 @@ struct GameEvent_t
 
 struct Convar_t
 {
+	std::string m_sName;
+
 	int GetInt(std::string sConvarName)
 	{
-		g_EmulatorEngine.WriteTrace("Convar::GetInt ( " + sConvarName + " )");
+		g_EmulatorEngine.WriteTrace(m_sName + "::GetInt(" + sConvarName + ")");
 		return 0;
 	}
 
 	float GetFloat(std::string sConvarName)
 	{
-		g_EmulatorEngine.WriteTrace("Convar::GetFloat ( " + sConvarName + " )");
+		g_EmulatorEngine.WriteTrace(m_sName + "::GetFloat ( " + sConvarName + " )");
 		return 0.0f;
 	}
 
 	std::string GetString(std::string sConvarName)
 	{
-		g_EmulatorEngine.WriteTrace("Convar::GetString ( " + sConvarName + " )");
+		g_EmulatorEngine.WriteTrace(m_sName + "::GetString ( " + sConvarName + " )");
 		return "collectordev gay";
 	}
 
 	void SetInt(std::string sConvarName, int iValue)
 	{
-		g_EmulatorEngine.WriteTrace("Convar::SetInt ( " + sConvarName + "," + std::to_string(iValue) + ")");
+		g_EmulatorEngine.WriteTrace(m_sName + "::SetInt ( " + sConvarName + "," + std::to_string(iValue) + ")");
 	}
 
 	void SetFloat(std::string sConvarName, float flValue)
 	{
-		g_EmulatorEngine.WriteTrace("Convar::SetFloat ( " + sConvarName + "," + std::to_string(flValue) + ")");
+		g_EmulatorEngine.WriteTrace(m_sName + "::SetFloat ( " + sConvarName + "," + std::to_string(flValue) + ")");
 
 	}
 
 	void SetString(std::string sConvarName, std::string sValue)
 	{
-		g_EmulatorEngine.WriteTrace("Convar::SetString ( " + sConvarName + "," + sValue + ")");
+		g_EmulatorEngine.WriteTrace(m_sName + "::SetString ( " + sConvarName + "," + sValue + ")");
 	}
 };
 
@@ -121,6 +124,52 @@ struct Color_t
 
 
 
+};
+
+
+
+struct PlayerInfo_t
+{
+	void Set(sol::stack_object Key, sol::stack_object Value, sol::this_state)
+	{
+		auto pStringKey = Key.as<sol::optional<std::string>>();
+
+		if (pStringKey)
+		{
+			const std::string& sKey = *pStringKey;
+
+			long iHashKey = FNV1A(sKey.c_str());
+
+			if( FNV1A("steam_id64") == iHashKey || FNV1A("name") == iHashKey)
+				g_EmulatorEngine.WriteTrace("PlayerInfo." + sKey + "= " + Value.as<std::string>() );
+			else
+				g_EmulatorEngine.WriteTrace("PlayerInfo." + sKey + "= " + std::to_string(Value.as<int>()) );
+
+		}
+	}
+
+	sol::object Get(sol::stack_object Key, sol::this_state L)
+	{
+		auto pStringKey = Key.as<sol::optional<std::string>>();
+
+		if (pStringKey)
+		{
+			const std::string& sKey = *pStringKey;
+
+
+
+			g_EmulatorEngine.WriteTrace("PlayerInfo.Get("  + sKey + ")");
+
+			long iHashKey = FNV1A(sKey.c_str());
+
+
+			if (FNV1A("steam_id64") == iHashKey || FNV1A("name") == iHashKey)
+				return sol::make_object(L, std::string("black") );
+			else
+				return sol::make_object(L, 0);
+
+		}
+	}
 };
 
 class CTypesSystem

@@ -69,4 +69,14 @@ void CTypesSystem::InitializeRender()
 
 void CTypesSystem::InitializeGame()
 {
+	/* Get current sol state */
+	auto& pState = g_EmulatorEngine.m_LuaState;
+
+	/* Player info ( ref: https://api.nixware.cc/sourceengine/types/player_info_t/ ) */
+	pState.new_usertype < PlayerInfo_t >(("player_info_t"),
+		sol::meta_function::index, &PlayerInfo_t::Get,
+		sol::meta_function::new_index, &PlayerInfo_t::Set
+		);
+
+
 }
