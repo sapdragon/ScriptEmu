@@ -90,12 +90,48 @@ struct Convar_t
 	}
 };
 
+/* Color type ( ref: https://api.nixware.cc/types/color_t/ )  */
+struct Color_t
+{
+	float r, g, b, a;
+
+	Color_t(float r, float g, float b, float a)
+	{
+		this->r = r;
+		this->g = g;
+		this->b = b;
+		this->a = a;
+	}
+
+	Color_t(float r, float g, float b)
+	{
+		this->r = r;
+		this->g = g;
+		this->b = b;
+		this->a = 1.f;
+	}
+
+	Color_t()
+	{
+		this->r = 0.f;
+		this->g = 0.f;
+		this->b = 0.f;
+		this->a = 0.f;
+	}
+
+
+
+};
+
 class CTypesSystem
 {
 public:
 	/* Initializes the math types */
 	void InitializeMath();
 	
+	/* Initialize render types*/
+	void InitializeRender();
+
 	/* Initializes the source engine types */
 	void InitializeGame();
 };

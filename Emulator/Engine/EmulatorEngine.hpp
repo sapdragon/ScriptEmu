@@ -24,6 +24,8 @@ public:
 	/* Write trace text */
 	void WriteTrace(const std::string& sText);
 
+	/* Getting trace data */
+	std::unordered_map <std::string, std::vector < std::string > > GetTraceData();
 private:
 	/* Initializes all game types, is a subfunction of InitializeEngine */
 	void InitializeTypes();
@@ -33,10 +35,11 @@ private:
 public:
 	/* State of the lua engine */
 	sol::state m_LuaState;
+
 private:
 	/* Tracing result. The first line is the name of the callback, the second vector is the set of lines */
 	std::unordered_map <std::string, std::vector < std::string > > m_aTraceData;
-	
+
 	/* Current execute callback name */
 	std::string m_sCallBackName;
 

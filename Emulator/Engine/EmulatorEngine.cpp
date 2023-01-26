@@ -2,8 +2,6 @@
 
 void CEmulatorEngine::InitializeEngine()
 {
-	m_LuaState = sol::state();
-
 	/* Adding the standard libraries, note: I should also add FFI here, but so far I don't know how to trace it.*/
 	m_LuaState.open_libraries(sol::lib::bit32, sol::lib::math, sol::lib::string, sol::lib::utf8);
 
@@ -18,7 +16,12 @@ void CEmulatorEngine::InitializeEngine()
 	m_LuaState[("getmetatable")] = sol::nil;
 	m_LuaState[("setmetatable")] = sol::nil;
 	m_LuaState[("__nil_callback")] = []() {};
-	
+
+	/* Initialize lua types*/
+	InitializeTypes();
+
+	/* Initialize lua tables */
+	InitializeTables();
 }
 
 void CEmulatorEngine::EmulateScript(const std::string& sData)
@@ -84,17 +87,30 @@ void CEmulatorEngine::WriteTrace(const std::string& sText)
 	m_aTraceData[m_sCallBackName].push_back(sText);
 }
 
+std::unordered_map<std::string, std::vector<std::string>> CEmulatorEngine::GetTraceData()
+{
+	return m_aTraceData;
+}
+
 void CEmulatorEngine::InitializeTypes()
 {
-	/* Initialize math types*/
+	/* Initialize math types */
 	g_TypesSystem.InitializeMath();
+
+	/* Initialize render types */
+	g_TypesSystem.InitializeRender();
 
 	/* Initialize source engine types */
 	g_TypesSystem.InitializeGame();
+	
+
 }
 
 void CEmulatorEngine::InitializeTables()
 {
 	/* Initialize tables for client */
 	g_TablesSystem.InitializeClient();
+
+	/* Initialize tables for render */
+	g_TablesSystem.InitializeRender();
 }

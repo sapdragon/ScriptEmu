@@ -53,6 +53,20 @@ void CTypesSystem::InitializeMath()
 		);
 }
 
+void CTypesSystem::InitializeRender()
+{
+	/* Get current sol state */
+	auto& pState = g_EmulatorEngine.m_LuaState;
+
+	pState.new_usertype<Color_t>(("color_t"),
+		sol::constructors <Color_t(float, float, float), Color_t(float, float, float, float)>(),
+		"r", &Color_t::r,
+		"g", &Color_t::g,
+		"b", &Color_t::b,
+		"a", &Color_t::a
+		);
+}
+
 void CTypesSystem::InitializeGame()
 {
 }
