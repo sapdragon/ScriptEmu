@@ -324,3 +324,138 @@ namespace Engine
 		g_EmulatorEngine.WriteTrace("Engine::ExecuteClientCmd ( " + sCommand + " )");
 	}
 }
+
+namespace Trace
+{
+	inline Trace_t TraceLine(int iSkipEntityIndex, int iMask, Vector vecStart, Vector vecEnd)
+	{
+		g_EmulatorEngine.WriteTrace("Trace::TraceLine ( " + std::to_string(iSkipEntityIndex) + ", " + std::to_string(iMask) + ", Vector3(" + std::to_string(vecStart.m_flX) + " , " + std::to_string(vecStart.m_flY) + " , " + std::to_string(vecStart.m_flZ) + "), Vector3(" + std::to_string(vecEnd.m_flX) + " , " + std::to_string(vecEnd.m_flY) + " , " + std::to_string(vecEnd.m_flZ) + ") )");
+		return Trace_t{ };
+	}
+
+	inline Trace_t TraceHull(int iMask, Vector vecStart, Vector vecEnd, Vector vecMins, Vector vecMaxs, int iTraceType, sol::function fnFilter)
+	{
+		fnFilter(2, 0xDEADBEEF);
+		
+		g_EmulatorEngine.WriteTrace("Trace::TraceHull ( " + std::to_string(iMask) + ", Vector3(" + std::to_string(vecStart.m_flX) + " , " + std::to_string(vecStart.m_flY) + " , " + std::to_string(vecStart.m_flZ) + "), Vector3(" + std::to_string(vecEnd.m_flX) + " , " + std::to_string(vecEnd.m_flY) + " , " + std::to_string(vecEnd.m_flZ) + "), Vector3(" + std::to_string(vecMins.m_flX) + " , " + std::to_string(vecMins.m_flY) + " , " + std::to_string(vecMins.m_flZ) + "), Vector3(" + std::to_string(vecMaxs.m_flX) + " , " + std::to_string(vecMaxs.m_flY) + " , " + std::to_string(vecMaxs.m_flZ) + "), " + std::to_string(iTraceType) + " )");
+		return Trace_t{ };
+	}
+}
+
+namespace GlobalVars
+{
+	int GetRealTime()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetRealTime()");
+		return 0x1337;
+	}
+
+	int GetFrameCount()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetFrameCount()");
+		return 0x1337;
+	}
+
+	int GetAbsoluteFrameTime()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetAbsoluteFrameCount()");
+		return 0x1337;
+	}
+
+	int GetCurrentTime()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetCurrentTime()");
+		return 0x1337;
+	}
+
+	int GetFrameTime()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetFrameTime()");
+		return 0x1337;
+	}
+
+	int GetMaxClients()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetMaxClients()");
+		return 32;
+	}
+
+	int GetTickCount()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetTickCount()");
+		return 0x1337;
+	}
+
+	int GetTickInterval()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetTickInterval()");
+		return 64;
+	}
+
+	float GetCurTime()
+	{
+		g_EmulatorEngine.WriteTrace("GlobalVars::GetCurTime()");
+		return 20.1337f;
+	}
+}
+
+namespace ClientState
+{
+	int GetChokedCommands()
+	{
+		g_EmulatorEngine.WriteTrace("ClientState::GetChokedCommands()");
+		return 12;
+	}
+
+	void ForceFullUpdate()
+	{
+		g_EmulatorEngine.WriteTrace("ClientState::ForceFullUpdate()");
+	}
+}
+
+namespace Entitylist
+{
+	inline int GetHighestEntityIndex()
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetHighestEntityIndex()");
+		return 64;
+	}
+
+	Entity_t GetLocalPlayer()
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetLocalPlayer()");
+		return Entity_t{ };
+	}
+
+	Entity_t GetEntityByIndex(int iIndex)
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetEntityByIndex ( " + std::to_string(iIndex) + " )");
+		return Entity_t{ };
+	}
+
+	Entity_t GetEntityFromHandle(int iHandle)
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetEntityFromHandle ( " + std::to_string(iHandle) + " )");
+		return Entity_t{ };
+	}
+
+	std::list < Entity_t > GetPlayers()
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetEntityList()");
+		return std::list < Entity_t > {Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t() };
+	}
+
+	std::list < Entity_t > GetEntitiesByClassName(std::string sClassName )
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetEntitiesByClassName ( " + sClassName + " )");
+		return std::list < Entity_t > {Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t() };
+	}
+
+	std::list < Entity_t > GetEntitiesByClassId(int iClassId)
+	{
+		g_EmulatorEngine.WriteTrace("Entitylist::GetEntitiesByClassId ( " + std::to_string(iClassId) + " )");
+		return std::list < Entity_t > {Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t() };
+	}
+
+	
+}

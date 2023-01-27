@@ -24,7 +24,7 @@ void CEmulatorEngine::InitializeEngine()
 	InitializeTables();
 }
 
-void CEmulatorEngine::EmulateScript(const std::string& sData)
+void CEmulatorEngine::EmulateScript(const std::string& sPath)
 {
 	sol::environment Environment(m_LuaState, sol::create, m_LuaState.globals());
 
@@ -32,7 +32,7 @@ void CEmulatorEngine::EmulateScript(const std::string& sData)
 
 	m_sCallBackName = "Main";
 
-	m_LuaState.script(sData, Environment, [&bErrorInLoad, &Environment](lua_State*, sol::protected_function_result Result)
+	m_LuaState.script_file(sPath, Environment, [&bErrorInLoad, &Environment](lua_State*, sol::protected_function_result Result)
 		{
 			if (!Result.valid())
 			{
@@ -59,7 +59,22 @@ void CEmulatorEngine::EmulateScript(const std::string& sData)
 
 		if (Function.valid())
 		{
-			sol::protected_function_result Result = Function();
+			sol::protected_function_result Result;
+			long lEventName = FNV1A(m_sCallBackName.c_str());
+
+			if (lEventName == FNV1A("create_move"))
+				Result = Function(UserCmd_t{});
+			else if (lEventName == FNV1A("frame_stage_notify"))
+				Result = Function(4);
+			else if (lEventName == FNV1A("fire_game_event"))
+				Result = Function(GameEvent_t{});
+			else if (lEventName == FNV1A("shot_fired"))
+				Result = Function(ShotInfo_t{});
+			else if (lEventName == FNV1A("override_view"))
+				Result = Function(ViewSetup_t{});
+			else
+				Result = Function();
+
 
 			if (!Result.valid())
 			{
@@ -121,4 +136,16 @@ void CEmulatorEngine::InitializeTables()
 	
 	/* Initialize engine table */
 	g_TablesSystem.InitializeEngine();
+
+	/* Initialize trace table */
+	g_TablesSystem.InitializeTrace();
+	
+	/* Initialize globals vars table */
+	g_TablesSystem.InitializeGlobalVars();
+	
+	/* initilalize clientstate table*/
+	g_TablesSystem.InitializeClientState();
+
+	/* Initialize entitylist table */
+	g_TablesSystem.IntitializeEntityList();
 }

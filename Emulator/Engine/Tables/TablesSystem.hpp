@@ -8,6 +8,10 @@ public:
 	void InitializeRageBot();
 	void InitializeSourceUtils();
 	void InitializeEngine();
+	void InitializeTrace();
+	void InitializeGlobalVars();
+	void InitializeClientState();
+	void IntitializeEntityList();
 };
 
 inline CTablesSystem g_TablesSystem;

@@ -5,12 +5,15 @@ int main()
 
     g_EmulatorEngine.InitializeEngine();
 
-    printf("ScriptEmu alpha\n");
+    printf("ScriptEmu alpha\n Enter path to script:");
 
-    g_EmulatorEngine.EmulateScript(R"(local local_info = engine.get_player_info(engine.get_local_player())
-local shit = local_info.steam_id64
+    std::string sPath;
 
-local_info.name = shit)");
+    sPath.reserve( _MAX_PATH);
+
+    std::cin >> sPath;
+    
+    g_EmulatorEngine.EmulateScript(sPath);
 
 	auto aTraceData = g_EmulatorEngine.GetTraceData();
 
@@ -21,5 +24,5 @@ local_info.name = shit)");
             printf("Trace info | Event: %s | %s \n", aEventMessages.first.c_str(), sMessage.c_str());
     }
 
-    __debugbreak();
+    system("pause");
 }

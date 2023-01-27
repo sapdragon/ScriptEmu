@@ -93,3 +93,49 @@ void CTablesSystem::InitializeEngine()
 
 
 }
+
+void CTablesSystem::InitializeTrace()
+{
+	/* Initialize new table for trace*/
+	auto tTrace = g_EmulatorEngine.m_LuaState.create_named_table("trace");
+
+	tTrace["line"] = Trace::TraceLine;
+	tTrace["hull"] = Trace::TraceHull;
+}
+
+void CTablesSystem::InitializeGlobalVars()
+{
+	/* Initialize new table for globalvars*/
+	auto tGlobalVars = g_EmulatorEngine.m_LuaState.create_named_table("globalvars");
+
+	tGlobalVars["get_real_time"] = GlobalVars::GetRealTime;
+	tGlobalVars["get_frame_count"] = GlobalVars::GetFrameCount;
+	tGlobalVars["get_absolute_frametime"] = GlobalVars::GetAbsoluteFrameTime;
+	tGlobalVars["get_current_time"] = GlobalVars::GetCurrentTime;
+	tGlobalVars["get_frame_time"] = GlobalVars::GetFrameTime;
+	tGlobalVars["get_max_clients"] = GlobalVars::GetMaxClients;
+	tGlobalVars["get_tick_count"] = GlobalVars::GetTickCount;
+	tGlobalVars["get_interval_per_tick"] = GlobalVars::GetTickInterval;
+}
+
+void CTablesSystem::InitializeClientState()
+{
+	/* Initialize new table for clientstate */
+	auto tClientstate = g_EmulatorEngine.m_LuaState.create_named_table("clientstate");
+	
+	tClientstate["get_choked_commands"] = ClientState::GetChokedCommands;
+	tClientstate["force_full_update"] = ClientState::ForceFullUpdate;
+}
+
+void CTablesSystem::IntitializeEntityList()
+{
+	auto tEntityList = g_EmulatorEngine.m_LuaState.create_named_table("entitylist");
+
+	tEntityList["get_highest_entity_index"] = Entitylist::GetHighestEntityIndex;
+	tEntityList["get_local_player"] = Entitylist::GetLocalPlayer;
+	tEntityList["get_entity_by_index"] = Entitylist::GetEntityByIndex;
+	tEntityList["get_entity_from_handle"] = Entitylist::GetEntityFromHandle;
+	tEntityList["get_players"] = Entitylist::GetPlayers;
+	tEntityList["get_entities_by_class_name"] = Entitylist::GetEntitiesByClassName;
+	tEntityList["get_entities_by_class_id"] = Entitylist::GetEntitiesByClassId;
+}
