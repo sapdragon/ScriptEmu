@@ -1,15 +1,21 @@
 #include <iostream>
+#include <thread>
 #include "Emulator/Engine/EmulatorEngine.hpp"
+#include "Emulator/Gui/Gui.hpp"
+
 int main()
 {
-
+    std::thread([]() {
+        g_EmuGui->Render();
+    }).detach();
+    
     g_EmulatorEngine.InitializeEngine();
 
     printf("ScriptEmu alpha\n Enter path to script:");
 
     std::string sPath;
 
-    sPath.reserve( _MAX_PATH);
+    sPath.reserve(_MAX_PATH);
 
     std::cin >> sPath;
     

@@ -83,8 +83,6 @@ void CEmulatorEngine::EmulateScript(const std::string& sPath)
 				printf(Error.what());
 			}
 		}
-
-		
 	}
 }
 
