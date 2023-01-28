@@ -76,33 +76,48 @@ void CEmuGUI::Render()
 void CEmuGUI::UI()
 {
     auto flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;
-
-	ImGui::Begin("Menu", nullptr, flags);
-    {
-        ImGui::SetWindowPos(ImVec2(0, 0));
-        ImGui::SetWindowSize(ImVec2(250, ImGui::GetIO().DisplaySize.y));
-
-        auto draw = ImGui::GetWindowDrawList();
-        auto pos = ImGui::GetWindowPos();
-        auto size = ImGui::GetWindowSize();
-
-        draw->AddRectFilled(pos, pos + size, IM_COL32(35, 35, 38, 255));
-
-        ImGui::SetCursorPos({ 10, 10 });
-        ImGui::BeginGroup();
-        {
-            if (GuiElements::Button("Retrace", { 230, 25 })) {
-				std::thread([]() { g_EmulatorEngine.ClearData(); g_EmulatorEngine.EmulateScript(g_EmuGui->lastPath); }).detach();
-            }
-        }
-		ImGui::EndGroup();
-    }
-	ImGui::End();
-
+    
     ImGui::Begin("Trace Log", nullptr, flags);
     {
-        ImGui::SetWindowPos(ImVec2(250, 0));
-        ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x - 250, ImGui::GetIO().DisplaySize.y));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
+        ImGui::BeginMainMenuBar();
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Open file"))
+                {
+					char szFile[MAX_PATH] = { 0 };
+					OPENFILENAMEA ofn = { 0 };
+					ofn.lStructSize = sizeof(ofn);
+					ofn.hwndOwner = hwnd;
+					ofn.lpstrFilter = "Lua files (*.lua)\0*.lua\0";
+					ofn.lpstrFile = szFile;
+					ofn.nMaxFile = MAX_PATH;
+					ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+					ofn.lpstrDefExt = "lua";
+					if (GetOpenFileNameA(&ofn))
+					{
+						lastPath = szFile;
+						std::thread([]() { g_EmulatorEngine.ClearData(); g_EmulatorEngine.EmulateScript(g_EmuGui->lastPath); }).detach();
+					}
+                }
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Tracing"))
+            {
+                if (ImGui::MenuItem("Retrace"))
+                {
+                    std::thread([]() { g_EmulatorEngine.ClearData(); g_EmulatorEngine.EmulateScript(g_EmuGui->lastPath); }).detach();
+                }
+                ImGui::EndMenu();
+            }
+        }
+        ImGui::EndMainMenuBar();
+		ImGui::PopStyleVar(2);
+
+        ImGui::SetWindowPos(ImVec2(0, 23));
+        ImGui::SetWindowSize(ImGui::GetIO().DisplaySize);
 
         auto draw = ImGui::GetWindowDrawList();
         auto pos = ImGui::GetWindowPos();
@@ -117,16 +132,22 @@ void CEmuGUI::UI()
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
         ImGui::SetCursorPos({ 0, 25 });
         ImGui::BeginChild("Tracing Log", ImGui::GetWindowSize() - ImVec2(0, 25));
-        auto iter = 1;
-        for (auto& aEventMessages : g_EmulatorEngine.GetTraceData())
-        {
-            SetColorForEvent(aEventMessages.first);
-
-            for (auto& sMessage : aEventMessages.second)
+        if (g_EmulatorEngine.GetTraceData().size() > 0) {
+            auto iter = 1;
+            for (auto& aEventMessages : g_EmulatorEngine.GetTraceData())
             {
-                GuiElements::TraceLog(aEventMessages.first.c_str(), sMessage.c_str(), m_Colors[aEventMessages.first], iter % 2 == 0);
-				iter++;
+                SetColorForEvent(aEventMessages.first);
+
+                for (auto& sMessage : aEventMessages.second)
+                {
+                    GuiElements::TraceLog(aEventMessages.first.c_str(), sMessage.c_str(), m_Colors[aEventMessages.first], iter % 2 == 0);
+                    iter++;
+                }
             }
+        }
+        else {
+            draw->AddText(pos + ImVec2(85, 0) + ImGui::GetWindowSize() / 2 - ImGui::CalcTextSize("Drag and drop .lua file into window to trace") / 2,
+                ImColor(255, 255, 255), "Drag and drop .lua file into window to trace");
         }
 		ImGui::EndChild();
 		ImGui::PopStyleVar();
