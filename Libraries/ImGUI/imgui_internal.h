@@ -358,7 +358,6 @@ IMGUI_API int           ImTextCountUtf8BytesFromStr(const ImWchar* in_text, cons
 // Helpers: ImVec2/ImVec4 operators
 // We are keeping those disabled by default so they don't leak in user space, to allow user enabling implicit cast operators between ImVec2 and their own types (using IM_VEC2_CLASS_EXTRA etc.)
 // We unfortunately don't have a unary- operator for ImVec2 because this would needs to be defined inside the class itself.
-#ifdef IMGUI_DEFINE_MATH_OPERATORS
 IM_MSVC_RUNTIME_CHECKS_OFF
 static inline ImVec2 operator*(const ImVec2& lhs, const float rhs)              { return ImVec2(lhs.x * rhs, lhs.y * rhs); }
 static inline ImVec2 operator/(const ImVec2& lhs, const float rhs)              { return ImVec2(lhs.x / rhs, lhs.y / rhs); }
@@ -376,10 +375,8 @@ static inline ImVec4 operator+(const ImVec4& lhs, const ImVec4& rhs)            
 static inline ImVec4 operator-(const ImVec4& lhs, const ImVec4& rhs)            { return ImVec4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w); }
 static inline ImVec4 operator*(const ImVec4& lhs, const ImVec4& rhs)            { return ImVec4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w); }
 IM_MSVC_RUNTIME_CHECKS_RESTORE
-#endif
 
 // Helpers: File System
-#ifdef IMGUI_DISABLE_FILE_FUNCTIONS
 #define IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
 typedef void* ImFileHandle;
 static inline ImFileHandle  ImFileOpen(const char*, const char*)                    { return NULL; }
@@ -387,7 +384,7 @@ static inline bool          ImFileClose(ImFileHandle)                           
 static inline ImU64         ImFileGetSize(ImFileHandle)                             { return (ImU64)-1; }
 static inline ImU64         ImFileRead(void*, ImU64, ImU64, ImFileHandle)           { return 0; }
 static inline ImU64         ImFileWrite(const void*, ImU64, ImU64, ImFileHandle)    { return 0; }
-#endif
+
 #ifndef IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
 typedef FILE* ImFileHandle;
 IMGUI_API ImFileHandle      ImFileOpen(const char* filename, const char* mode);

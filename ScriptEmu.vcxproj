@@ -159,6 +159,7 @@
     <ClInclude Include="Emulator\Engine\Tables\TablesSystem.hpp" />
     <ClInclude Include="Emulator\Engine\Types\TypesSystem.hpp" />
     <ClInclude Include="Emulator\Gui\Gui.hpp" />
+    <ClInclude Include="Emulator\Gui\GuiElements.hpp" />
     <ClInclude Include="Emulator\Math\Angle.hpp" />
     <ClInclude Include="Emulator\Math\Math.hpp" />
     <ClInclude Include="Emulator\Math\Vectors\Vector2.hpp" />

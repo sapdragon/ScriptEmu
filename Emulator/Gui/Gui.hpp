@@ -7,6 +7,7 @@
 
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <filesystem>
 
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
@@ -17,6 +18,10 @@
 class CEmuGUI {
 public:
 	void Render();
+
+private:
+	void UI();
+	void SetupStyles();
 
 private:
 	bool CreateDeviceD3D(HWND hWnd);

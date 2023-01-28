@@ -1,4 +1,6 @@
 #include "Gui.hpp"
+#include "../../Emulator/Engine/EmulatorEngine.hpp"
+#include "../Gui/GuiElements.hpp"
 #include "../../Libraries/ImGUI/imgui_impl_dx9.h"
 #include "../../Libraries/ImGUI/imgui_impl_win32.h"
 
@@ -21,6 +23,8 @@ void CEmuGUI::Render()
 
     ImGui::CreateContext();
 
+    SetupStyles();
+
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX9_Init(g_pd3dDevice);
 
@@ -40,14 +44,14 @@ void CEmuGUI::Render()
         ImGui_ImplWin32_NewFrame();
         
         ImGui::NewFrame();
-
+        UI();
         ImGui::EndFrame();
 
         g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
         g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
         g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 
-        g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
+        g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(15,15,15, 0), 1.0f, 0);
         if (g_pd3dDevice->BeginScene() >= 0)
         {
             ImGui::Render();
@@ -63,6 +67,68 @@ void CEmuGUI::Render()
     CleanupDeviceD3D();
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+}
+
+void CEmuGUI::UI()
+{
+    auto flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;
+
+	ImGui::Begin("Menu", nullptr, flags);
+    {
+        ImGui::SetWindowPos(ImVec2(0, 0));
+        ImGui::SetWindowSize(ImVec2(250, ImGui::GetIO().DisplaySize.y));
+
+		auto draw = ImGui::GetWindowDrawList();
+		auto pos = ImGui::GetWindowPos();
+		auto size = ImGui::GetWindowSize();
+
+		draw->AddRectFilled(pos, pos + size, IM_COL32(35, 35, 38, 255));
+    }
+	ImGui::End();
+
+    ImGui::Begin("Trace Log", nullptr, flags);
+    {
+        ImGui::SetWindowPos(ImVec2(250, 0));
+        ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x - 250, ImGui::GetIO().DisplaySize.y));
+
+        auto draw = ImGui::GetWindowDrawList();
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
+
+        draw->AddRectFilled(pos, pos + size, IM_COL32(25, 25, 28, 255));
+        draw->AddRectFilled(pos, pos + ImVec2(size.x, 25), IM_COL32(65, 65, 68, 255));
+        
+        draw->AddText(pos + ImVec2(10, 7), IM_COL32(255, 255, 255, 255), "Event");
+        draw->AddText(pos + ImVec2(180, 7), IM_COL32(255, 255, 255, 255), "Call");
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        ImGui::SetCursorPos({ 0, 25 });
+        ImGui::BeginChild("Tracing Log", ImGui::GetWindowSize() - ImVec2(0, 25));
+        auto iter = 1;
+        for (auto& aEventMessages : g_EmulatorEngine.GetTraceData())
+        {
+            for (auto& sMessage : aEventMessages.second)
+            {
+                GuiElements::TraceLog(aEventMessages.first.c_str(), sMessage.c_str(), iter % 2 == 0);
+				iter++;
+            }
+        }
+		ImGui::EndChild();
+		ImGui::PopStyleVar();
+			
+        draw->AddLine(pos + ImVec2(170, 25), pos + ImVec2(170, size.y), IM_COL32(45, 45, 48, 255));
+    }
+    ImGui::End();
+}
+
+void CEmuGUI::SetupStyles()
+{
+	ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 14.0f);
+
+	ImGuiStyle& style = ImGui::GetStyle();
+
+    style.WindowBorderSize = 0;
+	style.WindowPadding = ImVec2(0, 0);
 }
 
 bool CEmuGUI::CreateDeviceD3D(HWND hWnd)
@@ -104,8 +170,35 @@ LRESULT WINAPI CEmuGUI::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
 
+    HDROP hDrop;
+    POINT pt;
+    int cnt;
+    char fileName[512];
+
     switch (msg)
     {
+    case WM_CREATE:
+        DragAcceptFiles(hWnd, TRUE);
+        break;
+    case WM_DROPFILES:
+        hDrop = (HDROP)wParam;
+        DragQueryPoint(hDrop, &pt);
+        cnt = DragQueryFile(hDrop, 0xFFFFFFFF, 0, 0);
+
+        for (int i = 0; i < cnt; i++)
+        {
+            DragQueryFileA(hDrop, i, fileName, 512);
+            if (std::filesystem::path(fileName).extension() == ".lua")
+            {
+                std::thread([fileName] {
+                    g_EmulatorEngine.ClearData();
+                    g_EmulatorEngine.EmulateScript(fileName); 
+                }).detach();
+            }
+        }
+
+        DragFinish(hDrop);
+        break;
     case WM_SIZE:
         if (g_EmuGui->g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
         {

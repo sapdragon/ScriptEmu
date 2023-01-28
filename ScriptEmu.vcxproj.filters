@@ -125,5 +125,8 @@
     <ClInclude Include="Emulator\Gui\Gui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Emulator\Gui\GuiElements.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
