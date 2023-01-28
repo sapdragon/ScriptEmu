@@ -4,6 +4,10 @@
 #include "../../Libraries/ImGUI/imgui_impl_dx9.h"
 #include "../../Libraries/ImGUI/imgui_impl_win32.h"
 
+#include "../../Includes/Fonts/faprolight.hpp"
+#include "../../Includes/Fonts/roboto.hpp"
+#include "../../Includes/Fonts/hashes.h"
+
 void CEmuGUI::Render()
 {
     wc = { sizeof(WNDCLASSEX), CS_CLASSDC, g_EmuGui->WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, "ScriptEmu", NULL };
@@ -98,8 +102,8 @@ void CEmuGUI::UI()
         draw->AddRectFilled(pos, pos + size, IM_COL32(25, 25, 28, 255));
         draw->AddRectFilled(pos, pos + ImVec2(size.x, 25), IM_COL32(65, 65, 68, 255));
         
-        draw->AddText(pos + ImVec2(10, 7), IM_COL32(255, 255, 255, 255), "Event");
-        draw->AddText(pos + ImVec2(180, 7), IM_COL32(255, 255, 255, 255), "Call");
+        draw->AddText(pos + ImVec2(10, 5), IM_COL32(255, 255, 255, 255), "Event");
+        draw->AddText(pos + ImVec2(180, 5), IM_COL32(255, 255, 255, 255), "Call");
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
         ImGui::SetCursorPos({ 0, 25 });
@@ -123,8 +127,21 @@ void CEmuGUI::UI()
 
 void CEmuGUI::SetupStyles()
 {
-	ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Tahoma.ttf", 14.0f);
+    static const ImWchar ranges[] = {
+        0x0020, 0x00FF, 0x2000, 0x206F,
+        0x3000, 0x30FF, 0x31F0, 0x31FF,
+        0xFF00, 0xFFEF, 0x4e00, 0x9FAF, 0x0400,
+        0x052F, 0x2DE0, 0x2DFF, 0xA640, 0xA69F, 0
+    };
 
+    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(regular_compressed_data, regular_compressed_size, 16, nullptr, ranges);
+
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    ImFontConfig icons_config;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    ImGui::GetIO().Fonts->AddFontFromMemoryTTF(faprolight, sizeof faprolight, 18, &icons_config, icon_ranges);
+    
 	ImGuiStyle& style = ImGui::GetStyle();
 
     style.WindowBorderSize = 0;

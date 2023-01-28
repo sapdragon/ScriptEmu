@@ -166,6 +166,9 @@
     <ClInclude Include="Emulator\Math\Vectors\Vector3.hpp" />
     <ClInclude Include="Emulator\Math\Vectors\Vector4.hpp" />
     <ClInclude Include="Includes\FNV1A\FNV1A.hpp" />
+    <ClInclude Include="Includes\Fonts\faprolight.hpp" />
+    <ClInclude Include="Includes\Fonts\hashes.h" />
+    <ClInclude Include="Includes\Fonts\roboto.hpp" />
     <ClInclude Include="Includes\sol\config.hpp" />
     <ClInclude Include="Includes\sol\forward.hpp" />
     <ClInclude Include="Includes\sol\sol.hpp" />

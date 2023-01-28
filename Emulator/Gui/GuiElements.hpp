@@ -36,6 +36,6 @@ namespace GuiElements
         }
 
 		window->DrawList->AddText(bb.Min + ImVec2{ 10, 4 }, IM_COL32(255, 255, 255, 255), event);
-		window->DrawList->AddText(nullptr, 13, bb.Min + ImVec2{180, 4}, IM_COL32(255, 255, 255, 255), message, NULL, size.x - 180);
+		window->DrawList->AddText(nullptr, 16, bb.Min + ImVec2{180, 4}, IM_COL32(255, 255, 255, 255), message, NULL, size.x - 180);
 	}
 }
