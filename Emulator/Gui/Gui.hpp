@@ -14,6 +14,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 class CEmuGUI {
 public:
@@ -22,6 +23,22 @@ public:
 private:
 	void UI();
 	void SetupStyles();
+
+private:
+	std::string lastPath;
+	
+private:
+	ImColor GenerateRandomColor() {
+		return ImColor(rand() % 255, rand() % 255, rand() % 255);
+	};
+
+	std::map<std::string, ImColor> m_Colors;
+
+	void SetColorForEvent(std::string event) {
+		if (m_Colors.find(event) == m_Colors.end()) {
+			m_Colors[event] = GenerateRandomColor();
+		}
+	};
 
 private:
 	bool CreateDeviceD3D(HWND hWnd);

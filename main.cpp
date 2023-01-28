@@ -5,6 +5,8 @@
 
 int main()
 {
+	srand(time(NULL));
+
 	g_EmulatorEngine.InitializeEngine();
     g_EmuGui->Render();
 }

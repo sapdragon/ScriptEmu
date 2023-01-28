@@ -82,11 +82,20 @@ void CEmuGUI::UI()
         ImGui::SetWindowPos(ImVec2(0, 0));
         ImGui::SetWindowSize(ImVec2(250, ImGui::GetIO().DisplaySize.y));
 
-		auto draw = ImGui::GetWindowDrawList();
-		auto pos = ImGui::GetWindowPos();
-		auto size = ImGui::GetWindowSize();
+        auto draw = ImGui::GetWindowDrawList();
+        auto pos = ImGui::GetWindowPos();
+        auto size = ImGui::GetWindowSize();
 
-		draw->AddRectFilled(pos, pos + size, IM_COL32(35, 35, 38, 255));
+        draw->AddRectFilled(pos, pos + size, IM_COL32(35, 35, 38, 255));
+
+        ImGui::SetCursorPos({ 10, 10 });
+        ImGui::BeginGroup();
+        {
+            if (GuiElements::Button("Retrace", { 230, 25 })) {
+				std::thread([]() { g_EmulatorEngine.ClearData(); g_EmulatorEngine.EmulateScript(g_EmuGui->lastPath); }).detach();
+            }
+        }
+		ImGui::EndGroup();
     }
 	ImGui::End();
 
@@ -111,9 +120,11 @@ void CEmuGUI::UI()
         auto iter = 1;
         for (auto& aEventMessages : g_EmulatorEngine.GetTraceData())
         {
+            SetColorForEvent(aEventMessages.first);
+
             for (auto& sMessage : aEventMessages.second)
             {
-                GuiElements::TraceLog(aEventMessages.first.c_str(), sMessage.c_str(), iter % 2 == 0);
+                GuiElements::TraceLog(aEventMessages.first.c_str(), sMessage.c_str(), m_Colors[aEventMessages.first], iter % 2 == 0);
 				iter++;
             }
         }
@@ -208,6 +219,7 @@ LRESULT WINAPI CEmuGUI::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
             if (std::filesystem::path(fileName).extension() == ".lua")
             {
                 std::thread([fileName] {
+                    g_EmuGui->lastPath = fileName;
                     g_EmulatorEngine.ClearData();
                     g_EmulatorEngine.EmulateScript(fileName); 
                 }).detach();
