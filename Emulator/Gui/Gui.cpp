@@ -96,6 +96,7 @@ void CEmuGUI::UI()
 					ofn.nMaxFile = MAX_PATH;
 					ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 					ofn.lpstrDefExt = "lua";
+                    
 					if (GetOpenFileNameA(&ofn))
 					{
 						lastPath = szFile;
