@@ -32,7 +32,8 @@ void CEmulatorEngine::EmulateScript(const std::string& sPath)
 
 	m_sCallBackName = "Main";
 
-	m_LuaState.script_file(sPath, Environment, [&bErrorInLoad, &Environment](lua_State*, sol::protected_function_result Result)
+	m_LuaState.script_file(sPath, Environment, 
+		[&bErrorInLoad, &Environment](lua_State*, sol::protected_function_result Result)
 		{
 			if (!Result.valid())
 			{
@@ -43,7 +44,8 @@ void CEmulatorEngine::EmulateScript(const std::string& sPath)
 				bErrorInLoad = true;
 				return Result;
 			}
-		});
+		}
+	);
 
 		
 	if(bErrorInLoad)
@@ -83,8 +85,6 @@ void CEmulatorEngine::EmulateScript(const std::string& sPath)
 				printf(Error.what());
 			}
 		}
-
-		
 	}
 }
 
@@ -99,7 +99,37 @@ void CEmulatorEngine::ClearData()
 
 void CEmulatorEngine::WriteTrace(const std::string& sText)
 {
-	m_aTraceData[m_sCallBackName].push_back(sText);
+	std::string sNewText = sText;
+
+	// if sText contains 000000 replace it all with 0
+	if (sText.find("000000") != std::string::npos)
+	{
+		std::string sReplace = "000000";
+		std::string sReplaceWith = "0";
+
+		size_t pos = 0;
+		while ((pos = sNewText.find(sReplace, pos)) != std::string::npos)
+		{
+			sNewText.replace(pos, sReplace.length(), sReplaceWith);
+			pos += sReplaceWith.length();
+		}
+	}
+
+	// if sNewText contains " , " replace it all with ", "
+	if (sNewText.find(" , ") != std::string::npos)
+	{
+		std::string sReplace = " , ";
+		std::string sReplaceWith = ", ";
+
+		size_t pos = 0;
+		while ((pos = sNewText.find(sReplace, pos)) != std::string::npos)
+		{
+			sNewText.replace(pos, sReplace.length(), sReplaceWith);
+			pos += sReplaceWith.length();
+		}
+	}
+
+	m_aTraceData[m_sCallBackName].push_back(sNewText);
 }
 
 std::unordered_map<std::string, std::vector<std::string>> CEmulatorEngine::GetTraceData()

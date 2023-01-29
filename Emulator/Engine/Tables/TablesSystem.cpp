@@ -25,7 +25,7 @@ void CTablesSystem::InitializeRender()
 {
 	/* Initialize new table for render*/
 	auto tRender = g_EmulatorEngine.m_LuaState.create_named_table("renderer");
-	
+
 	/* fill the render table */
 	tRender["setup_font"] = Render::SetupFont;
 	tRender["setup_texture"] = Render::SetupTexture;
