@@ -39,7 +39,7 @@ public:
 
 	/* Logical operators */
 
-	bool Vector2::operator==(Vector2& vecOther)
+	bool operator==(Vector2& vecOther)
 	{
 		return this->m_flX == vecOther.m_flX && this->m_flY == vecOther.m_flY;
 	}

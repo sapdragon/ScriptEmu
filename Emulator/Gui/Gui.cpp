@@ -7,6 +7,7 @@
 #include "../../Includes/Fonts/faprolight.hpp"
 #include "../../Includes/Fonts/roboto.hpp"
 #include "../../Includes/Fonts/hashes.h"
+#include <thread>
 
 void CEmuGUI::Render()
 {
