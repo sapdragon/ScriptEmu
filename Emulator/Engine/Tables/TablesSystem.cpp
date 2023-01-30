@@ -1,14 +1,19 @@
 #include "../EmulatorEngine.hpp"
-
 #include "CheatTables.hpp"
+
+void CTablesSystem::InitializeGlobals()
+{
+	/* Override default LUA functions */
+	g_EmulatorEngine.m_LuaState.set_function("print", Globals::Print);
+	g_EmulatorEngine.m_LuaState.set_function("require", Globals::Require);
+}
 
 void CTablesSystem::InitializeClient()
 {
-	/* Initialize new table for client*/
+	/* Initialize new table for client */
 	auto tClient = g_EmulatorEngine.m_LuaState.create_named_table("client");
-	
 
-	/* Fill table */
+	/* Fill the client table */
 	tClient["load_script"] = Client::LoadScript;
 	tClient["unload_script"] = Client::UnloadScript;
 	tClient["get_script_name"] = Client::GetScriptName;
@@ -18,15 +23,14 @@ void CTablesSystem::InitializeClient()
 	tClient["get_timestamp"] = Client::GetTimeStamp;
 	tClient["get_system_time"] = Client::GetSystemTime;
 	tClient["find_pattern"] = Client::FindPattern;
-	
 }
 
 void CTablesSystem::InitializeRender()
 {
-	/* Initialize new table for render*/
+	/* Initialize new table for render */
 	auto tRender = g_EmulatorEngine.m_LuaState.create_named_table("renderer");
 
-	/* fill the render table */
+	/* Fill the render table */
 	tRender["setup_font"] = Render::SetupFont;
 	tRender["setup_texture"] = Render::SetupTexture;
 	tRender["text"] = Render::RenderText;
@@ -44,10 +48,10 @@ void CTablesSystem::InitializeRender()
 
 void CTablesSystem::InitializeRageBot()
 {
-	/* Initialize new table for ragebot*/
+	/* Initialize new table for ragebot */
 	auto tRagebot = g_EmulatorEngine.m_LuaState.create_named_table("ragebot");
 
-	/* fill the ragebot table */
+	/* Fill the ragebot table */
 	tRagebot["ignore_player"] = Ragebot::IgnorePlayer;
 	tRagebot["override_wall_penetration"] = Ragebot::OverrideWallPenetration;
 	tRagebot["override_desync_correction"] = Ragebot::OverrideDesyncCorrection;
@@ -58,14 +62,14 @@ void CTablesSystem::InitializeRageBot()
 	tRagebot["override_max_misses"] = Ragebot::OverrideMaxMisses;
 	tRagebot["override_head_scale"] = Ragebot::OverrideHeadScale;
 	tRagebot["override_body_scale"] = Ragebot::OverrideBodyScale;
-	
 }
 
 void CTablesSystem::InitializeSourceUtils()
 {
-	/* Initialize new table for se*/
+	/* Initialize new table for source utilities */
 	auto tSourceUtils = g_EmulatorEngine.m_LuaState.create_named_table("se");
 	
+	/* Fill the source utilities table */
 	tSourceUtils["world_to_screen"] = SourceUtils::WorldToScreen;
 	tSourceUtils["set_clantag"] = SourceUtils::SetClanTag;
 	tSourceUtils["set_name"] = SourceUtils::SetName;
@@ -73,13 +77,15 @@ void CTablesSystem::InitializeSourceUtils()
 	tSourceUtils["get_netvar"] = SourceUtils::GetNetVar;
 	tSourceUtils["get_latency"] = SourceUtils::GetLatency;
 	tSourceUtils["create_interface"] = SourceUtils::CreateInterface;
-
+	tSourceUtils["register_event"] = SourceUtils::RegisterEvent;
 }
 
 void CTablesSystem::InitializeEngine()
 {
+	/* Initialize new table for engine */
 	auto tEngine = g_EmulatorEngine.m_LuaState.create_named_table("engine");
 	
+	/* Fill the engine table */
 	tEngine["get_screen_size"] = Engine::GetScreenSize;
 	tEngine["is_connected"] = Engine::IsConnected;
 	tEngine["is_in_game"] = Engine::IsInGame;
@@ -90,24 +96,24 @@ void CTablesSystem::InitializeEngine()
 	tEngine["set_view_angles"] = Engine::SetViewAngles;
 	tEngine["get_view_angles"] = Engine::GetViewAngles;
 	tEngine["execute_client_cmd"] = Engine::ExecuteClientCmd;
-
-
 }
 
 void CTablesSystem::InitializeTrace()
 {
-	/* Initialize new table for trace*/
+	/* Initialize new table for trace */
 	auto tTrace = g_EmulatorEngine.m_LuaState.create_named_table("trace");
 
+	/* Fill the trace table */
 	tTrace["line"] = Trace::TraceLine;
 	tTrace["hull"] = Trace::TraceHull;
 }
 
 void CTablesSystem::InitializeGlobalVars()
 {
-	/* Initialize new table for globalvars*/
+	/* Initialize new table for globalvars */
 	auto tGlobalVars = g_EmulatorEngine.m_LuaState.create_named_table("globalvars");
 
+	/* Fill the globalvars table */
 	tGlobalVars["get_real_time"] = GlobalVars::GetRealTime;
 	tGlobalVars["get_frame_count"] = GlobalVars::GetFrameCount;
 	tGlobalVars["get_absolute_frametime"] = GlobalVars::GetAbsoluteFrameTime;
@@ -123,14 +129,17 @@ void CTablesSystem::InitializeClientState()
 	/* Initialize new table for clientstate */
 	auto tClientstate = g_EmulatorEngine.m_LuaState.create_named_table("clientstate");
 	
+	/* Fill the clientstate table */
 	tClientstate["get_choked_commands"] = ClientState::GetChokedCommands;
 	tClientstate["force_full_update"] = ClientState::ForceFullUpdate;
 }
 
 void CTablesSystem::IntitializeEntityList()
 {
+	/* Initialize new table for entitylist */
 	auto tEntityList = g_EmulatorEngine.m_LuaState.create_named_table("entitylist");
 
+	/* Fill the entitylist table */
 	tEntityList["get_highest_entity_index"] = Entitylist::GetHighestEntityIndex;
 	tEntityList["get_local_player"] = Entitylist::GetLocalPlayer;
 	tEntityList["get_entity_by_index"] = Entitylist::GetEntityByIndex;

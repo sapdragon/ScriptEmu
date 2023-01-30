@@ -3,6 +3,7 @@
 class CTablesSystem
 {
 public:
+	void InitializeGlobals();
 	void InitializeClient();
 	void InitializeRender();
 	void InitializeRageBot();

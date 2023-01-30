@@ -152,6 +152,9 @@ void CEmulatorEngine::InitializeTypes()
 
 void CEmulatorEngine::InitializeTables()
 {
+	/* Initialize tables for globals */
+	g_TablesSystem.InitializeGlobals();
+
 	/* Initialize tables for client */
 	g_TablesSystem.InitializeClient();
 

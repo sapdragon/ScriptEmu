@@ -1,19 +1,72 @@
 #pragma once
 
+/* Global function table ( ref: https://www.lua.org/pil ) */
+namespace Globals
+{
+	inline std::vector<std::string> ToString(sol::variadic_args sArgs) 
+	{
+		std::vector<std::string> returnVector;
 
+		for (auto arg : sArgs) {
+			auto type = arg.get_type();
+			switch (type)
+			{
+			case sol::type::string:
+				returnVector.push_back("\"" + arg.as<std::string>() + "\"");
+				break;
+			case sol::type::number:
+				returnVector.push_back(std::to_string(arg.as<double>()));
+				break;
+			case sol::type::boolean:
+				returnVector.push_back(std::to_string(arg.as<bool>()));
+				break;
+			case sol::type::function:
+				returnVector.push_back("fn");
+				break;
+			case sol::type::lightuserdata:
+				returnVector.push_back("userdata");
+				break;
+			default:
+				returnVector.push_back("nil");
+				break;
+			}
+		}
+
+		return returnVector;
+	}
+
+	inline void Print(sol::variadic_args sText)
+	{
+		auto returnVector = ToString(sText);
+		std::string sArgValue = "";
+
+		for (auto arg : returnVector) {
+			if (sArgValue == "")
+				sArgValue = arg;
+			else
+				sArgValue += ", " + arg;
+		}
+
+		g_EmulatorEngine.WriteTrace("print ( " + sArgValue + " )");
+	}
+
+	inline void Require(std::string sScriptName)
+	{
+		g_EmulatorEngine.WriteTrace("require ( \"" + sScriptName + "\" )");
+	}
+}
 
 /* Client table ( ref: https://api.nixware.cc/client/ ) */
 namespace Client
 {
-
 	inline void LoadScript(std::string sScriptName)
 	{
-		g_EmulatorEngine.WriteTrace("Client::LoadScript ( " + sScriptName + " )");
+		g_EmulatorEngine.WriteTrace("Client::LoadScript ( \"" + sScriptName + "\" )");
 	}
 
 	inline void UnloadScript(std::string sScriptName)
 	{
-		g_EmulatorEngine.WriteTrace("Client::UnloadScript ( " + sScriptName + " )");
+		g_EmulatorEngine.WriteTrace("Client::UnloadScript ( \"" + sScriptName + "\" )");
 	}
 
 	inline std::string GetScriptName()
@@ -25,7 +78,7 @@ namespace Client
 
 	inline void RegisterCallBack(std::string sName, sol::function fCallback)
 	{
-		g_EmulatorEngine.WriteTrace("Client::RegisterCallBack ( " + sName + " )");
+		g_EmulatorEngine.WriteTrace("Client::RegisterCallBack ( \"" + sName + "\", fn )");
 		return g_CallBacksSystem.RegisterCallBack(sName, fCallback);
 	}
 
@@ -38,7 +91,7 @@ namespace Client
 
 	inline void Notify(std::string sMessage)
 	{
-		g_EmulatorEngine.WriteTrace("Client::Notify ( " + sMessage + " )");
+		g_EmulatorEngine.WriteTrace("Client::Notify ( \"" + sMessage + "\" )");
 	}
 	
 	inline int GetTimeStamp()
@@ -57,12 +110,10 @@ namespace Client
 
 	inline int FindPattern(std::string sModule, std::string sPattern)
 	{
-		g_EmulatorEngine.WriteTrace("Client::FindPattern ( " + sModule + " , " + sPattern + " )");
+		g_EmulatorEngine.WriteTrace("Client::FindPattern ( \"" + sModule + "\", \"" + sPattern + "\" )");
 
 		return 0xC001C0DE;
-	}
-
-	
+	}	
 }
 
 /* Render table ( ref: https://api.nixware.cc/renderer/ ) */
@@ -86,7 +137,7 @@ namespace Render
 
 	inline Font_t SetupFont(std::string sPath, int iSize, int iFlags)
 	{
-		g_EmulatorEngine.WriteTrace("Render::SetupFont ( " + sPath + " , " + std::to_string(iSize) + " , " + std::to_string(iFlags) + " )");
+		g_EmulatorEngine.WriteTrace("Render::SetupFont ( \"" + sPath + "\", " + std::to_string(iSize) + ", " + std::to_string(iFlags) + " )");
 
 		return Font_t{ sPath, iSize, iFlags };
 	}
@@ -100,18 +151,18 @@ namespace Render
 	
 	inline void RenderText(std::string sText, Font_t Font, Vector2 vecPosition, int iSize, Color_t Color)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderText ( " + sText + " , " + Font.m_sPath + " , " + std::to_string(Font.m_iSize) + " , " + std::to_string(Font.m_iFlags) + " , Vector2(" + std::to_string(vecPosition.m_flX) + " , " + std::to_string(vecPosition.m_flY) + "), " + std::to_string(iSize) + " , Color(" + std::to_string(Color.r) + " , " + std::to_string(Color.g) + " , " + std::to_string(Color.b) + " , " + std::to_string(Color.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderText ( \"" + sText + "\", " + Font.m_sPath + ", " + std::to_string(Font.m_iSize) + ", " + std::to_string(Font.m_iFlags) + ", Vector2(" + std::to_string(vecPosition.m_flX) + ", " + std::to_string(vecPosition.m_flY) + "), " + std::to_string(iSize) + ", Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + ") )");
 	}
 
 	/* texture(tex, from, to, color)*/
 	inline void RenderTexture(Texture_t Texture, Vector2 vecFrom, Vector2 vecTo, Color_t Color)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderTexture ( " + Texture.m_sPath + " , Vector2(" + std::to_string(vecFrom.m_flX) + " , " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + " , " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + " , " + std::to_string(Color.g) + " , " + std::to_string(Color.b) + " , " + std::to_string(Color.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderTexture ( " + Texture.m_sPath + ", Vector2(" + std::to_string(vecFrom.m_flX) + ", " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + ", " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + ") )");
 	}
 	
 	inline Vector2 GetTextSize(Font_t Font, int iSize, std::string sText)
 	{
-		g_EmulatorEngine.WriteTrace("Render::GetTextSize ( " + Font.m_sPath + " , " + std::to_string(Font.m_iSize) + " , " + std::to_string(Font.m_iFlags) + " , " + std::to_string(iSize) + " , " + sText + " )");
+		g_EmulatorEngine.WriteTrace("Render::GetTextSize ( " + Font.m_sPath + ", " + std::to_string(Font.m_iSize) + ", " + std::to_string(Font.m_iFlags) + ", " + std::to_string(iSize) + ", \"" + sText + "\" )");
 
 		return Vector2(49, 50);
 	}
@@ -125,47 +176,46 @@ namespace Render
 
 	inline void RenderLine(Vector2 vecFrom, Vector2 vecTo, Color_t Color)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderLine ( Vector2(" + std::to_string(vecFrom.m_flX) + " , " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + " , " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + " , " + std::to_string(Color.g) + " , " + std::to_string(Color.b) + " , " + std::to_string(Color.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderLine ( Vector2(" + std::to_string(vecFrom.m_flX) + ", " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + ", " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + ") )");
 	}
 
 	inline void RenderRect(Vector2 vecFrom, Vector2 vecTo, Color_t Color)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderRect ( Vector2(" + std::to_string(vecFrom.m_flX) + " , " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + " , " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + " , " + std::to_string(Color.g) + " , " + std::to_string(Color.b) + " , " + std::to_string(Color.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderRect ( Vector2(" + std::to_string(vecFrom.m_flX) + ", " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + ", " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + ") )");
 	}
 
 	inline void RenderRectFilled(Vector2 vecFrom, Vector2 vecTo, Color_t Color)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderRectFilled ( Vector2(" + std::to_string(vecFrom.m_flX) + " , " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + " , " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + " , " + std::to_string(Color.g) + " , " + std::to_string(Color.b) + " , " + std::to_string(Color.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderRectFilled ( Vector2(" + std::to_string(vecFrom.m_flX) + ", " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + ", " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + ") )");
 	}
 
 	/* rect_filled_fade(from, to, col_upr_left, col_upr_right, col_bot_right, col_bot_left) */
 	inline void RenderRectFilledFade(Vector2 vecFrom, Vector2 vecTo, Color_t ColorUpperLeft, Color_t ColorUpperRight, Color_t ColorBottomRight, Color_t ColorBottomLeft)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderRectFilledFade ( Vector2(" + std::to_string(vecFrom.m_flX) + " , " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + " , " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(ColorUpperLeft.r) + " , " + std::to_string(ColorUpperLeft.g) + " , " + std::to_string(ColorUpperLeft.b) + " , " + std::to_string(ColorUpperLeft.a) + "), Color(" + std::to_string(ColorUpperRight.r) + " , " + std::to_string(ColorUpperRight.g) + " , " + std::to_string(ColorUpperRight.b) + " , " + std::to_string(ColorUpperRight.a) + "), Color(" + std::to_string(ColorBottomRight.r) + " , " + std::to_string(ColorBottomRight.g) + " , " + std::to_string(ColorBottomRight.b) + " , " + std::to_string(ColorBottomRight.a) + "), Color(" + std::to_string(ColorBottomLeft.r) + " , " + std::to_string(ColorBottomLeft.g) + " , " + std::to_string(ColorBottomLeft.b) + " , " + std::to_string(ColorBottomLeft.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderRectFilledFade ( Vector2(" + std::to_string(vecFrom.m_flX) + ", " + std::to_string(vecFrom.m_flY) + "), Vector2(" + std::to_string(vecTo.m_flX) + ", " + std::to_string(vecTo.m_flY) + "), Color(" + std::to_string(ColorUpperLeft.r) + ", " + std::to_string(ColorUpperLeft.g) + ", " + std::to_string(ColorUpperLeft.b) + ", " + std::to_string(ColorUpperLeft.a) + "), Color(" + std::to_string(ColorUpperRight.r) + ", " + std::to_string(ColorUpperRight.g) + ", " + std::to_string(ColorUpperRight.b) + ", " + std::to_string(ColorUpperRight.a) + "), Color(" + std::to_string(ColorBottomRight.r) + ", " + std::to_string(ColorBottomRight.g) + ", " + std::to_string(ColorBottomRight.b) + ", " + std::to_string(ColorBottomRight.a) + "), Color(" + std::to_string(ColorBottomLeft.r) + ", " + std::to_string(ColorBottomLeft.g) + ", " + std::to_string(ColorBottomLeft.b) + ", " + std::to_string(ColorBottomLeft.a) + ") )");
 	}
 	/* circle_fade(pos, radius, color_in, color_out) */
 	inline void RenderCircleFade(Vector2 vecPos, int iRadius, Color_t ColorIn, Color_t ColorOut)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderCircleFade ( Vector2(" + std::to_string(vecPos.m_flX) + " , " + std::to_string(vecPos.m_flY) + "), " + std::to_string(iRadius) + ", Color(" + std::to_string(ColorIn.r) + " , " + std::to_string(ColorIn.g) + " , " + std::to_string(ColorIn.b) + " , " + std::to_string(ColorIn.a) + "), Color(" + std::to_string(ColorOut.r) + " , " + std::to_string(ColorOut.g) + " , " + std::to_string(ColorOut.b) + " , " + std::to_string(ColorOut.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderCircleFade ( Vector2(" + std::to_string(vecPos.m_flX) + ", " + std::to_string(vecPos.m_flY) + "), " + std::to_string(iRadius) + ", Color(" + std::to_string(ColorIn.r) + ", " + std::to_string(ColorIn.g) + ", " + std::to_string(ColorIn.b) + ", " + std::to_string(ColorIn.a) + "), Color(" + std::to_string(ColorOut.r) + ", " + std::to_string(ColorOut.g) + ", " + std::to_string(ColorOut.b) + ", " + std::to_string(ColorOut.a) + ") )");
 	}
 
 	/* circle(pos, radius, segments, filled, color) */
 	inline void RenderCircle(Vector2 vecPos, int iRadius, int iSegments, bool bFilled, Color_t Color)
 	{
-		g_EmulatorEngine.WriteTrace("Render::RenderCircle ( Vector2(" + std::to_string(vecPos.m_flX) + " , " + std::to_string(vecPos.m_flY) + "), " + std::to_string(iRadius) + ", " + std::to_string(iSegments) + ", " + std::to_string(bFilled) + ", Color(" + std::to_string(Color.r) + " , " + std::to_string(Color.g) + " , " + std::to_string(Color.b) + " , " + std::to_string(Color.a) + ") )");
+		g_EmulatorEngine.WriteTrace("Render::RenderCircle ( Vector2(" + std::to_string(vecPos.m_flX) + ", " + std::to_string(vecPos.m_flY) + "), " + std::to_string(iRadius) + ", " + std::to_string(iSegments) + ", " + std::to_string(bFilled) + ", Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + ") )");
 	}
 
 	inline void FilledPolygon(std::vector < Vector2 > aPoints, Color_t Color)
 	{
 		std::string sPoints = "{ ";
 		for (auto& Point : aPoints)
-			sPoints += "Vector2(" + std::to_string(Point.m_flX) + " , " + std::to_string(Point.m_flY) + "), ";
+			sPoints += "Vector2(" + std::to_string(Point.m_flX) + ", " + std::to_string(Point.m_flY) + "), ";
 		
 		sPoints += "}";
 
 		g_EmulatorEngine.WriteTrace("Render::FilledPolygon (" + sPoints + "Color(" + std::to_string(Color.r) + ", " + std::to_string(Color.g) + ", " + std::to_string(Color.b) + ", " + std::to_string(Color.a) + "))");
 	}
-
 }
 
 namespace Ragebot
@@ -219,36 +269,35 @@ namespace Ragebot
 	{
 		g_EmulatorEngine.WriteTrace("Ragebot::OverrideBodyScale ( " + std::to_string(iEntityIndex) + ", " + std::to_string(flScale) + " )");
 	}
-
 }
 
 namespace SourceUtils
 {
 	inline Vector2 WorldToScreen(Vector vecWorld)
 	{
-		g_EmulatorEngine.WriteTrace("SourceUtils::WorldToScreen ( Vector3(" + std::to_string(vecWorld.m_flX) + " , " + std::to_string(vecWorld.m_flY) + " , " + std::to_string(vecWorld.m_flZ) + ") )");
+		g_EmulatorEngine.WriteTrace("SourceUtils::WorldToScreen ( Vector3(" + std::to_string(vecWorld.m_flX) + ", " + std::to_string(vecWorld.m_flY) + ", " + std::to_string(vecWorld.m_flZ) + ") )");
 		return Vector2(200, 250);
 	}
 
 	inline void SetClanTag(std::string sTag)
 	{
-		g_EmulatorEngine.WriteTrace("SourceUtils::SetClanTag ( " + sTag + " )");
+		g_EmulatorEngine.WriteTrace("SourceUtils::SetClanTag ( \"" + sTag + "\" )");
 	}
 
 	inline void SetName(std::string sName)
 	{
-		g_EmulatorEngine.WriteTrace("SourceUtils::SetName ( " + sName + " )");
+		g_EmulatorEngine.WriteTrace("SourceUtils::SetName ( \"" + sName + "\" )");
 	}
 
 	inline Convar_t GetConVar(std::string sName)
 	{
-		g_EmulatorEngine.WriteTrace("SourceUtils::GetConVar ( " + sName + " )");
+		g_EmulatorEngine.WriteTrace("SourceUtils::GetConVar ( \"" + sName + "\" )");
 		return Convar_t{ sName };
 	}
 
 	inline int GetNetVar(std::string sTable, std::string sProp)
 	{
-		g_EmulatorEngine.WriteTrace("SourceUtils::GetNetVar ( " + sTable + ", " + sProp + " )");
+		g_EmulatorEngine.WriteTrace("SourceUtils::GetNetVar ( \"" + sTable + "\", \"" + sProp + "\" )");
 		return 0x1337;
 	}
 
@@ -259,8 +308,13 @@ namespace SourceUtils
 
 	inline int CreateInterface(std::string sModule, std::string sInterface)
 	{
-		g_EmulatorEngine.WriteTrace("SourceUtils::CreateInterface ( " + sModule + ", " + sInterface + " )");
+		g_EmulatorEngine.WriteTrace("SourceUtils::CreateInterface ( \"" + sModule + "\", \"" + sInterface + "\" )");
 		return 0x1337;
+	}
+
+	inline void RegisterEvent(std::string sEvent)
+	{
+		g_EmulatorEngine.WriteTrace("SourceUtils::RegisterEvent ( \"" + sEvent + "\" )");
 	}
 }
 
@@ -310,7 +364,7 @@ namespace Engine
 	
 	inline void SetViewAngles(Angle angViewAngles)
 	{
-		g_EmulatorEngine.WriteTrace("Engine::SetViewAngles ( Angle(" + std::to_string(angViewAngles.m_flPitch) + " , " + std::to_string(angViewAngles.m_flYaw) + " , " + std::to_string(angViewAngles.m_flRoll) + ") )");
+		g_EmulatorEngine.WriteTrace("Engine::SetViewAngles ( Angle(" + std::to_string(angViewAngles.m_flPitch) + ", " + std::to_string(angViewAngles.m_flYaw) + ", " + std::to_string(angViewAngles.m_flRoll) + ") )");
 	}
 	
 	inline Angle GetViewAngles()
@@ -321,7 +375,7 @@ namespace Engine
 	
 	inline void ExecuteClientCmd(std::string sCommand)
 	{
-		g_EmulatorEngine.WriteTrace("Engine::ExecuteClientCmd ( " + sCommand + " )");
+		g_EmulatorEngine.WriteTrace("Engine::ExecuteClientCmd ( \"" + sCommand + "\" )");
 	}
 }
 
@@ -329,7 +383,7 @@ namespace Trace
 {
 	inline Trace_t TraceLine(int iSkipEntityIndex, int iMask, Vector vecStart, Vector vecEnd)
 	{
-		g_EmulatorEngine.WriteTrace("Trace::TraceLine ( " + std::to_string(iSkipEntityIndex) + ", " + std::to_string(iMask) + ", Vector3(" + std::to_string(vecStart.m_flX) + " , " + std::to_string(vecStart.m_flY) + " , " + std::to_string(vecStart.m_flZ) + "), Vector3(" + std::to_string(vecEnd.m_flX) + " , " + std::to_string(vecEnd.m_flY) + " , " + std::to_string(vecEnd.m_flZ) + ") )");
+		g_EmulatorEngine.WriteTrace("Trace::TraceLine ( " + std::to_string(iSkipEntityIndex) + ", " + std::to_string(iMask) + ", Vector3(" + std::to_string(vecStart.m_flX) + ", " + std::to_string(vecStart.m_flY) + ", " + std::to_string(vecStart.m_flZ) + "), Vector3(" + std::to_string(vecEnd.m_flX) + ", " + std::to_string(vecEnd.m_flY) + ", " + std::to_string(vecEnd.m_flZ) + ") )");
 		return Trace_t{ };
 	}
 
@@ -337,7 +391,7 @@ namespace Trace
 	{
 		fnFilter(2, 0xDEADBEEF);
 		
-		g_EmulatorEngine.WriteTrace("Trace::TraceHull ( " + std::to_string(iMask) + ", Vector3(" + std::to_string(vecStart.m_flX) + " , " + std::to_string(vecStart.m_flY) + " , " + std::to_string(vecStart.m_flZ) + "), Vector3(" + std::to_string(vecEnd.m_flX) + " , " + std::to_string(vecEnd.m_flY) + " , " + std::to_string(vecEnd.m_flZ) + "), Vector3(" + std::to_string(vecMins.m_flX) + " , " + std::to_string(vecMins.m_flY) + " , " + std::to_string(vecMins.m_flZ) + "), Vector3(" + std::to_string(vecMaxs.m_flX) + " , " + std::to_string(vecMaxs.m_flY) + " , " + std::to_string(vecMaxs.m_flZ) + "), " + std::to_string(iTraceType) + " )");
+		g_EmulatorEngine.WriteTrace("Trace::TraceHull ( " + std::to_string(iMask) + ", Vector3(" + std::to_string(vecStart.m_flX) + ", " + std::to_string(vecStart.m_flY) + ", " + std::to_string(vecStart.m_flZ) + "), Vector3(" + std::to_string(vecEnd.m_flX) + ", " + std::to_string(vecEnd.m_flY) + ", " + std::to_string(vecEnd.m_flZ) + "), Vector3(" + std::to_string(vecMins.m_flX) + ", " + std::to_string(vecMins.m_flY) + ", " + std::to_string(vecMins.m_flZ) + "), Vector3(" + std::to_string(vecMaxs.m_flX) + ", " + std::to_string(vecMaxs.m_flY) + ", " + std::to_string(vecMaxs.m_flZ) + "), " + std::to_string(iTraceType) + " )");
 		return Trace_t{ };
 	}
 }
@@ -447,7 +501,7 @@ namespace Entitylist
 
 	std::list < Entity_t > GetEntitiesByClassName(std::string sClassName )
 	{
-		g_EmulatorEngine.WriteTrace("Entitylist::GetEntitiesByClassName ( " + sClassName + " )");
+		g_EmulatorEngine.WriteTrace("Entitylist::GetEntitiesByClassName ( \"" + sClassName + "\" )");
 		return std::list < Entity_t > {Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t() };
 	}
 
@@ -456,6 +510,4 @@ namespace Entitylist
 		g_EmulatorEngine.WriteTrace("Entitylist::GetEntitiesByClassId ( " + std::to_string(iClassId) + " )");
 		return std::list < Entity_t > {Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t(), Entity_t() };
 	}
-
-	
 }
